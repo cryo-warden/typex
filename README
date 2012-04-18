@@ -1,0 +1,131 @@
+// More like example code than a true README. Oh well. Enjoy!
+
+// Type-Checking! //
+
+var abc = '123', i = 7;
+
+$.overload.test('not undefined', abc); // true
+$.overload.test('string', abc); // true
+$.overload.test('numeric', abc); // true
+$.overload.test('numeric', i); // true
+$.overload.test('integer', i); // true
+$.overload.test('char', abc[0]); // true
+$.overload.test('string or array', abc); // true
+$.overload.test('string', abc); // true
+$.overload.test('array', []); // true
+
+$.overload.test('string', i); // false
+$.overload.test('integer', abc); // false
+$.overload.test('string and array', abc); // false (always false; for any value)
+$.overload.test('set', null); // false
+$.overload.test('not undefined'); // false
+
+
+
+// Advanced Type-Checking! //
+
+$.overload.test('numeric array', [abc, i, 82, 97, abc, '5.2']); // true
+$.overload.test('char array', [abc[0], abc[1], abc[2]]); // true
+$.overload.test('array array', [[], ['Huzzah!']]); // true
+$.overload.test('array array array', [[[], [], []], [[]]]); // true (and hard to read!)
+$.overload.test('string array array', [[abc]]); // true
+$.overload.test('((not set) or number) array', [null, 5, 'abc']); // false
+
+$.overload.test('char array', abc); // false (a little odd, but that's how it is)
+
+
+
+// Super-Advanced Type-Checking! //
+
+$.overload.add('ILogger', function (value) {
+	return $.overload.test('function', value.log);
+});
+
+$.overload.test('ILogger array', [console, { log: $.noop }]); // true
+
+
+// Function Overloading! //
+
+var olEx0 = $.overload(
+	['string'],
+	function (str) {
+		console.log(str, str, str);
+	},
+	['int'],
+	function (i) {
+		console.log(i+5);
+	},
+	['string', 'int'],
+	function (str, i) {
+		console.log(str, str, str);
+		console.log(i+5);
+	}
+);
+
+// Default Arguments! //
+
+var olEx1 = $.overload(
+	['string'],
+	function (str) {
+		console.log(str, str, str);
+	},
+	['int'],
+	function (i) {
+		console.log(i+5);
+	},
+	[['string', 'Happy!'], ['int', -5]],
+	function (str, i) {
+		console.log(str, str, str);
+		console.log(i+5);
+	}
+);
+
+// Put It Together! //
+
+var olEx2 = $.overload(
+	['ILogger', 'string'],
+	function (logger, str) {
+		logger.log(str, str, str);
+	},
+	['ILogger', 'int array'],
+	function (logger, iArr) {
+		$.each(iArr, function (key, i) {
+			logger.log(i+5);
+		});
+	}
+);
+
+var olEx3 = $.overload(
+	['ILogger', 'string array'],
+	function (logger, strArr) {
+		$.each(strArr, function (key, str) {
+			logger.log(str);
+		});
+	},
+	['ILogger', 'int array'],
+	function oe3iarr(logger, iArr) {
+		return oe3iarr.first.call(this, logger, iArr);
+	}
+);
+
+var obj = {
+	olEx4: $.overload(
+		['ILogger', 'int array'],
+		function (logger, iArr) {
+			var self = this;
+			$.each(iArr, function (key, i) {
+				logger.log(i);
+				logger.log(self.a, self.b, self.c);
+			});
+		},
+		['ILogger', 'number array'],
+		function oe4narr(logger, nArr) {
+			return oe4narr.first.call(this, logger, $.map(nArr, function (n) {
+				return 1000 * n;
+			}));
+		}
+	),
+	a: 5,
+	b: 17,
+	c: 852.1
+};
