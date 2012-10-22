@@ -111,9 +111,7 @@ typex.add('allOf', 'true array');
 
     * any arguments can be used, though it's best if they correspond to the types given by paramsI
 
-    Returns a function that, when called, will check its arguments against each paramsI in order. The first paramsI that matches the params will cause the corresponding funcI to be called.
-
-Returns
+Returns a function that, when called, will check its arguments against each paramsI in order. The first paramsI that matches the params will cause the corresponding funcI to be called.
 
 ```js
 var words = typex.overload(
