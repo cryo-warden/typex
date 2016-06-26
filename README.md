@@ -1,6 +1,6 @@
 # JavaScript Type Extensions ( typex 0.3.0 ) #
 
-**This library is now dependency-free and will soon be re-released in a new repo.**
+**This library is now dependency-free.**
 
 ## Basic API ##
 
